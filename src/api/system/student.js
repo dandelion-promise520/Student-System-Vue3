@@ -42,3 +42,11 @@ export function delStudent(studentId) {
     method: 'delete'
   })
 }
+
+// 查询班级下拉列表（对应你刚才在 Controller 写的接口）
+export function getClassList() {
+  return request({
+    url: '/system/student/classList',
+    method: 'get'
+  })
+}

@@ -8,7 +8,12 @@
       label-width="68px"
     >
       <el-form-item label="学生" prop="studentId">
-        <el-select v-model="form.studentId" placeholder="请选择学生">
+        <el-select
+          v-model="queryParams.studentId"
+          placeholder="请选择学生"
+          clearable
+          filterable
+        >
           <el-option
             v-for="item in studentList"
             :key="item.studentId"
@@ -19,7 +24,12 @@
       </el-form-item>
 
       <el-form-item label="课程" prop="courseId">
-        <el-select v-model="form.courseId" placeholder="请选择课程" filterable>
+        <el-select
+          v-model="queryParams.courseId"
+          placeholder="请选择课程"
+          clearable
+          filterable
+        >
           <el-option
             v-for="item in courseOptions"
             :key="item.courseId"
@@ -29,14 +39,6 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="考试成绩" prop="score">
-        <el-input
-          v-model="queryParams.score"
-          placeholder="请输入考试成绩"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="学期" prop="term">
         <el-input
           v-model="queryParams.term"
@@ -45,16 +47,17 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
+
       <el-form-item label="考试日期" prop="examDate">
         <el-date-picker
-          clearable
           v-model="queryParams.examDate"
           type="date"
           value-format="YYYY-MM-DD"
-          placeholder="请选择考试日期"
-        >
-        </el-date-picker>
+          placeholder="请选择日期"
+          clearable
+        />
       </el-form-item>
+
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery"
           >搜索</el-button
@@ -168,27 +171,57 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改学生成绩对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="scoreRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="学生ID" prop="studentId">
-          <el-input v-model="form.studentId" placeholder="请输入学生ID" />
+        <el-form-item label="学生" prop="studentId">
+          <el-select
+            v-model="form.studentId"
+            placeholder="请选择学生"
+            filterable
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in studentList"
+              :key="item.studentId"
+              :label="item.studentName"
+              :value="item.studentId"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="课程" prop="courseId">
+          <el-select
+            v-model="form.courseId"
+            placeholder="请选择课程"
+            filterable
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in courseOptions"
+              :key="item.courseId"
+              :label="item.courseName"
+              :value="item.courseId"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="考试成绩" prop="score">
-          <el-input v-model="form.score" placeholder="请输入考试成绩" />
+          <el-input-number
+            v-model="form.score"
+            :min="0"
+            :max="150"
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="学期" prop="term">
-          <el-input v-model="form.term" placeholder="请输入学期" />
+          <el-input v-model="form.term" placeholder="例如：2023秋季" />
         </el-form-item>
         <el-form-item label="考试日期" prop="examDate">
           <el-date-picker
-            clearable
             v-model="form.examDate"
             type="date"
             value-format="YYYY-MM-DD"
-            placeholder="请选择考试日期"
-          >
-          </el-date-picker>
+            placeholder="选择日期"
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -216,6 +249,8 @@ import {
   addScore,
   updateScore,
 } from "@/api/system/score";
+import { listStudent } from "@/api/system/student"; // 确认路径是否正确
+import { listCourse } from "@/api/system/course"; // 确认路径是否正确
 
 const { proxy } = getCurrentInstance();
 
@@ -240,23 +275,38 @@ const data = reactive({
     term: null,
     examDate: null,
   },
+  studentList: [], // 学生下拉选项
+  courseOptions: [], // 课程下拉选项
   rules: {
-    studentId: [{ required: true, message: "学生ID不能为空", trigger: "blur" }],
-    courseId: [
-      { required: true, message: "课程ID不能为空", trigger: "change" },
-    ],
+    studentId: [{ required: true, message: "请选择学生", trigger: "change" }],
+    courseId: [{ required: true, message: "请选择课程", trigger: "change" }],
+    score: [{ required: true, message: "分数不能为空", trigger: "blur" }],
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules, studentList, courseOptions } = toRefs(data);
 
-/** 查询学生成绩列表 */
+/** 查询成绩列表 */
 function getList() {
   loading.value = true;
   listScore(queryParams.value).then((response) => {
     scoreList.value = response.rows;
     total.value = response.total;
     loading.value = false;
+  });
+}
+
+/** 查询学生下拉列表 */
+function getStudentList() {
+  listStudent({ pageNum: 1, pageSize: 1000 }).then((res) => {
+    studentList.value = res.rows;
+  });
+}
+
+/** 查询课程下拉列表 */
+function getCourseList() {
+  listCourse({ pageNum: 1, pageSize: 1000 }).then((res) => {
+    courseOptions.value = res.rows;
   });
 }
 
@@ -275,10 +325,6 @@ function reset() {
     score: null,
     term: null,
     examDate: null,
-    createBy: null,
-    createTime: null,
-    updateBy: null,
-    updateTime: null,
     remark: null,
   };
   proxy.resetForm("scoreRef");
@@ -326,13 +372,13 @@ function submitForm() {
   proxy.$refs["scoreRef"].validate((valid) => {
     if (valid) {
       if (form.value.scoreId != null) {
-        updateScore(form.value).then((response) => {
+        updateScore(form.value).then(() => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addScore(form.value).then((response) => {
+        addScore(form.value).then(() => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
@@ -368,5 +414,8 @@ function handleExport() {
   );
 }
 
+// 初始化数据
+getStudentList();
+getCourseList();
 getList();
 </script>
