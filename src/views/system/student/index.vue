@@ -8,7 +8,12 @@
       label-width="68px"
     >
       <el-form-item label="归属班级" prop="classId">
-        <el-select v-model="form.classId" placeholder="请选择班级" clearable>
+        <el-select
+          v-model="queryParams.classId"
+          placeholder="请选择班级"
+          clearable
+          filterable
+        >
           <el-option
             v-for="item in classOptions"
             :key="item.classId"
@@ -155,7 +160,6 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="学生ID" align="center" prop="studentId" />
-      <el-table-column label="班级ID" align="center" prop="classId" />
       <el-table-column label="学生姓名" align="center" prop="studentName" />
       <el-table-column label="学号" align="center" prop="studentNumber" />
       <el-table-column label="性别" align="center" prop="gender">
@@ -167,7 +171,7 @@
         label="出生日期"
         align="center"
         prop="birthday"
-        width="180"
+        width="120"
       >
         <template #default="scope">
           <span>{{ parseTime(scope.row.birthday, "{y}-{m}-{d}") }}</span>
@@ -178,7 +182,7 @@
         label="入学日期"
         align="center"
         prop="enrollmentDate"
-        width="180"
+        width="120"
       >
         <template #default="scope">
           <span>{{ parseTime(scope.row.enrollmentDate, "{y}-{m}-{d}") }}</span>
@@ -218,11 +222,15 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改学生信息对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="studentRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="归属班级" prop="classId">
-          <el-select v-model="form.classId" placeholder="请选择班级" clearable>
+          <el-select
+            v-model="form.classId"
+            placeholder="请选择班级"
+            clearable
+            style="width: 100%"
+          >
             <el-option
               v-for="item in classOptions"
               :key="item.classId"
@@ -242,7 +250,7 @@
             <el-radio
               v-for="dict in sys_user_sex"
               :key="dict.value"
-              :label="dict.value"
+              :value="dict.value"
               >{{ dict.label }}</el-radio
             >
           </el-radio-group>
@@ -254,6 +262,7 @@
             type="date"
             value-format="YYYY-MM-DD"
             placeholder="请选择出生日期"
+            style="width: 100%"
           >
           </el-date-picker>
         </el-form-item>
@@ -273,6 +282,7 @@
             type="date"
             value-format="YYYY-MM-DD"
             placeholder="请选择入学日期"
+            style="width: 100%"
           >
           </el-date-picker>
         </el-form-item>
@@ -308,7 +318,6 @@ const { proxy } = getCurrentInstance();
 const { sys_user_sex } = proxy.useDict("sys_user_sex");
 
 const studentList = ref([]);
-const classOptions = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -333,8 +342,9 @@ const data = reactive({
     address: null,
     enrollmentDate: null,
   },
+  classOptions: [], // 班级选项存放在 reactive 里
   rules: {
-    classId: [{ required: true, message: "班级ID不能为空", trigger: "change" }],
+    classId: [{ required: true, message: "班级不能为空", trigger: "change" }],
     studentName: [
       { required: true, message: "学生姓名不能为空", trigger: "blur" },
     ],
@@ -344,7 +354,8 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+// 核心修复：这里要把 classOptions 也解构出来供模板使用
+const { queryParams, form, rules, classOptions } = toRefs(data);
 
 /** 查询学生信息列表 */
 function getList() {
@@ -375,10 +386,6 @@ function reset() {
     email: null,
     address: null,
     enrollmentDate: null,
-    createBy: null,
-    createTime: null,
-    updateBy: null,
-    updateTime: null,
     remark: null,
   };
   proxy.resetForm("studentRef");
@@ -445,6 +452,7 @@ function submitForm() {
 /** 查询班级下拉列表 */
 function getClasses() {
   getClassList().then((response) => {
+    // 确保这里的 response.data 结构符合你的 API 返回
     classOptions.value = response.data;
   });
 }
@@ -475,6 +483,7 @@ function handleExport() {
   );
 }
 
-getList();
+// 执行初始化
 getClasses();
+getList();
 </script>

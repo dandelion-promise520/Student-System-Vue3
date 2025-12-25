@@ -212,7 +212,7 @@
           />
         </el-form-item>
         <el-form-item label="学期" prop="term">
-          <el-input v-model="form.term" placeholder="例如：2023秋季" />
+          <el-input v-model="form.term" placeholder="2025秋季" />
         </el-form-item>
         <el-form-item label="考试日期" prop="examDate">
           <el-date-picker
