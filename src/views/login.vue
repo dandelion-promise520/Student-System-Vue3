@@ -200,6 +200,7 @@ getCookie();
   align-items: center;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
+  // background-image: url("https://lsky.ljflovezxm.cn/i/2025/08/29/68b1aa4c30f23.jpg");
   background-size: cover;
 }
 .title {
