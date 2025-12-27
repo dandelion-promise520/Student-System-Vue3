@@ -48,7 +48,7 @@
     <el-divider />
     <el-row :gutter="20">
       <!-- 卡片1 -->
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+      <!-- <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
@@ -57,10 +57,10 @@
           </template>
           <div class="body">卡片内容</div>
         </el-card>
-      </el-col>
+      </el-col> -->
 
       <!-- 卡片2 -->
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+      <!-- <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
@@ -69,10 +69,10 @@
           </template>
           <div class="body">卡片内容</div>
         </el-card>
-      </el-col>
+      </el-col> -->
 
       <!-- 卡片3 -->
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
+      <!-- <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
@@ -81,13 +81,13 @@
           </template>
           <div class="body">卡片内容</div>
         </el-card>
-      </el-col>
+      </el-col> -->
     </el-row>
   </div>
 </template>
 
 <script setup name="Index">
-const version = ref("3.9.1");
+const version = ref("1.0.0");
 
 function goTarget(url) {
   window.open(url, "__blank");

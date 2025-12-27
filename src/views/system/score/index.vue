@@ -124,8 +124,8 @@
       <el-table-column label="成绩ID" align="center" prop="scoreId" />
       <el-table-column label="学生姓名" align="center" prop="studentName" />
       <el-table-column label="课程名称" align="center" prop="courseName" />
-      <el-table-column label="考试成绩" align="center" prop="score" />
-      <el-table-column label="学期" align="center" prop="term" />
+      <el-table-column label="考试成绩" align="center" prop="score" sortable />
+      <el-table-column label="学期" align="center" prop="term" sortable />
       <el-table-column
         label="考试日期"
         align="center"
