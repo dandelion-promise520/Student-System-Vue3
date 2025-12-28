@@ -1,5 +1,6 @@
 <img width="2137" height="460" alt="mysql" src="https://github.com/user-attachments/assets/37b94f3f-8f62-4f7d-bb2e-3e43c01beae3" />
 <img width="1196" height="724" alt="redis" src="https://github.com/user-attachments/assets/933c83fe-7fae-498a-ab5e-ad8981abf176" />
+
 # 生产环境运行看这里
 
 - 这个是mysql和redis配置，运行时请自行带上对应环境变量，或者数据库和redis的配置按照图中给的默认值来
